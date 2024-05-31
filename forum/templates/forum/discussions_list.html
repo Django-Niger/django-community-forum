@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Discussions</h1>
+{% if discussions %}
+  <ul>
+    {% for discussion in discussions %}
+      <li>
+        <a href="{% url 'forum:discussion_detail' discussion.id %}">{{ discussion.title }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No discussions are available.</p>
+{% endif %}
+{% endblock %}

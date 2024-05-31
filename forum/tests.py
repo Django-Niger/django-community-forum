@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.urls import reverse
 from django.test import TestCase
 from .models import Discussion, Post
 
@@ -22,3 +23,18 @@ class PostModelTests(TestCase):
         self.assertEqual(post.discussion, discussion)
         self.assertEqual(post.author, user)
         self.assertEqual(post.content, "Test content")
+
+
+class DiscussionViewTests(TestCase):
+    def test_view_discussions_list(self):
+        response = self.client.get(reverse("forum:discussions_list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "No discussions are available.")
+
+    def test_view_discussion_detail(self):
+        discussion = Discussion.objects.create(title="Test Discussion")
+        response = self.client.get(
+            reverse("forum:discussion_detail", args=[discussion.id])
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, discussion.title)

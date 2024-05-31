@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ discussion.title }}</h1>
+
+<h2>Posts</h2>
+{% if discussion.posts.all %}
+  <ul>
+    {% for post in discussion.posts.all %}
+      <li>
+        <strong>{{ post.author.username }}:</strong> {{ post.content }}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No posts yet.</p>
+{% endif %}
+{% endblock %}
