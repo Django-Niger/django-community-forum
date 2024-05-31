@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.test import TestCase
 from .models import Discussion, Post
+from .forms import DiscussionForm, PostForm
 
 
 class DiscussionModelTests(TestCase):
@@ -38,3 +39,18 @@ class DiscussionViewTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, discussion.title)
+
+
+class CreateDiscussionViewTests(TestCase):
+    def test_form_display(self):
+        response = self.client.get(reverse("forum:create_discussion"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.context["form"], DiscussionForm)
+
+
+class CreatePostViewTests(TestCase):
+    def test_form_display(self):
+        discussion = Discussion.objects.create(title="Test Discussion")
+        response = self.client.get(reverse("forum:create_post", args=[discussion.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.context["form"], PostForm)
