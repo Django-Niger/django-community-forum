@@ -1,8 +1,36 @@
+import subprocess
+from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.test import TestCase
 from .models import Discussion, Post
 from .forms import DiscussionForm, PostForm
+
+
+class CodeFormatTest(TestCase):
+    def test_code_format(self):
+        """
+        Test to ensure that Python code adheres to Black's style using a specific version.
+        """
+        # Check Black version
+        version_result = subprocess.run(
+            ["black", "--version"], stdout=subprocess.PIPE, text=True
+        )
+        self.assertIn(
+            "24.4.2",
+            version_result.stdout,
+            msg="Incorrect Black version. Expected 24.4.2.",
+        )
+
+        # Check code format
+        format_result = subprocess.run(
+            ["black", "--check", "."], stdout=subprocess.PIPE, text=True
+        )
+        self.assertEqual(
+            format_result.returncode,
+            0,
+            msg="Code format issues found. Please run Black.",
+        )
 
 
 class DiscussionModelTests(TestCase):
