@@ -20,6 +20,7 @@ Contents:
    docs/usage
    docs/api
    docs/development
+   docs/contributions
    docs/faq
    docs/changelog
 
