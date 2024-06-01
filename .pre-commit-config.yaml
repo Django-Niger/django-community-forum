@@ -1,0 +1,13 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 24.4.2  # Utiliser la version de Black que tu as installée
+    hooks:
+      - id: black
+        language_version: python3.11.6  # Assure-toi que cela correspond à ta version de Python
+  - repo: local
+    hooks:
+      - id: django-tests
+        name: Run Django Tests
+        entry: python manage.py test
+        language: system
+        pass_filenames: false
