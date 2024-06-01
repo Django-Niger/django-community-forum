@@ -2,5 +2,5 @@
 
 
 def check_user_permission(user):
-    """Par défaut, retourne True pour permettre l'accès si aucun hook spécifique n'est défini."""
+    """By default, returns True to allow access if no specific hook is defined."""
     return True

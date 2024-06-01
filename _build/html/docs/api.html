@@ -35,6 +35,16 @@
   <section id="api-reference">
 <h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h1>
 <p>Automatically generated from your module docstrings.</p>
+<section id="hooks">
+<h2>Hooks<a class="headerlink" href="#hooks" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="forum.hooks.check_user_permission">
+<span class="sig-prename descclassname"><span class="pre">forum.hooks.</span></span><span class="sig-name descname"><span class="pre">check_user_permission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#forum.hooks.check_user_permission" title="Link to this definition">¶</a></dt>
+<dd><p>By default, returns True to allow access if no specific hook is defined.</p>
+</dd></dl>
+
+<p>This function is a hook used by the forum application to check if a user has the permission to create discussions. By default, it returns <cite>True</cite>, allowing access to all users. Override this function to implement custom access control logic.</p>
+</section>
 </section>
 
 
@@ -60,7 +70,10 @@
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hooks">Hooks</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
