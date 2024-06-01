@@ -42,15 +42,44 @@ class DiscussionViewTests(TestCase):
 
 
 class CreateDiscussionViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="testuser", password="12345")
+
     def test_form_display(self):
+        self.client.login(username="testuser", password="12345")
         response = self.client.get(reverse("forum:create_discussion"))
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.context["form"], DiscussionForm)
 
+    def test_redirect_if_not_logged_in(self):
+        response = self.client.get(reverse("forum:create_discussion"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("next=%s" % reverse("forum:create_discussion"), response.url)
+
 
 class CreatePostViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="testuser", password="12345")
+        self.discussion = Discussion.objects.create(title="Test Discussion")
+
     def test_form_display(self):
+        self.client.login(username="testuser", password="12345")
         discussion = Discussion.objects.create(title="Test Discussion")
         response = self.client.get(reverse("forum:create_post", args=[discussion.id]))
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.context["form"], PostForm)
+
+
+class PostEditTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="user", password="pass")
+        self.other_user = User.objects.create_user(username="other", password="pass")
+        self.discussion = Discussion.objects.create(title="Test Discussion")
+        self.post = Post.objects.create(
+            discussion=self.discussion, author=self.user, content="Original Content"
+        )
+
+    def test_edit_post_by_non_owner(self):
+        self.client.login(username="other", password="pass")
+        response = self.client.get(reverse("forum:edit_post", args=[self.post.id]))
+        self.assertEqual(response.status_code, 403)
