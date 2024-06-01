@@ -34,16 +34,171 @@
             
   <section id="api-reference">
 <h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h1>
-<p>Automatically generated from your module docstrings.</p>
+<p>This part of the documentation covers all the public interfaces of the Django-community-forum package. It is generated automatically from the source code, and includes details on functions, classes, and methods.</p>
 <section id="hooks">
 <h2>Hooks<a class="headerlink" href="#hooks" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="forum.hooks.check_user_permission">
 <span class="sig-prename descclassname"><span class="pre">forum.hooks.</span></span><span class="sig-name descname"><span class="pre">check_user_permission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#forum.hooks.check_user_permission" title="Link to this definition">¶</a></dt>
-<dd><p>By default, returns True to allow access if no specific hook is defined.</p>
+<dd><p>Determine if the given user has permission to create a discussion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user</strong> (<em>django.contrib.auth.models.User</em>) – User instance to check</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the user has permission, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <p>This function is a hook used by the forum application to check if a user has the permission to create discussions. By default, it returns <cite>True</cite>, allowing access to all users. Override this function to implement custom access control logic.</p>
+<dl class="py class" id="module-forum.models">
+<dt class="sig sig-object py" id="forum.models.Discussion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">forum.models.</span></span><span class="sig-name descname"><span class="pre">Discussion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#forum.models.Discussion" title="Link to this definition">¶</a></dt>
+<dd><p>Represents a forum discussion.</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>title (str): The title of the discussion.
+created_at (datetime): The date and time the discussion was created.</p>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="forum.models.Discussion.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#forum.models.Discussion.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="forum.models.Discussion.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#forum.models.Discussion.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="forum.models.Post">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">forum.models.</span></span><span class="sig-name descname"><span class="pre">Post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#forum.models.Post" title="Link to this definition">¶</a></dt>
+<dd><p>Represents a post within a discussion.</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>discussion (Discussion): The discussion to which the post belongs.
+author (User): The user who authored the post.
+content (str): The content of the post.
+created_at (datetime): The date and time the post was created.</p>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="forum.models.Post.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#forum.models.Post.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="forum.models.Post.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#forum.models.Post.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function" id="module-forum.views">
+<dt class="sig sig-object py" id="forum.views.create_discussion">
+<span class="sig-prename descclassname"><span class="pre">forum.views.</span></span><span class="sig-name descname"><span class="pre">create_discussion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#forum.views.create_discussion" title="Link to this definition">¶</a></dt>
+<dd><p>Create a new discussion if the user has the permission.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> – HttpRequest object</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>HttpResponse object; redirects to the discussion list or displays the form</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="forum.views.create_post">
+<span class="sig-prename descclassname"><span class="pre">forum.views.</span></span><span class="sig-name descname"><span class="pre">create_post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#forum.views.create_post" title="Link to this definition">¶</a></dt>
+<dd><p>Create a new post in a specific discussion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – HttpRequest object</p></li>
+<li><p><strong>pk</strong> – Primary key of the discussion in which to create the post</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>HttpResponse object; redirects to the discussion detail or displays the form</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="forum.views.delete_post">
+<span class="sig-prename descclassname"><span class="pre">forum.views.</span></span><span class="sig-name descname"><span class="pre">delete_post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#forum.views.delete_post" title="Link to this definition">¶</a></dt>
+<dd><p>Allows the user to delete their own post.</p>
+<p>Validates that the logged-in user is the author of the post. If not, a forbidden response is given.
+If the user is the author, the post is deleted upon confirmation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – HttpRequest object</p></li>
+<li><p><strong>pk</strong> – Primary key of the post to be deleted</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>HttpResponse object; redirects to the discussion detail if deletion is successful</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="forum.views.discussion_detail">
+<span class="sig-prename descclassname"><span class="pre">forum.views.</span></span><span class="sig-name descname"><span class="pre">discussion_detail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#forum.views.discussion_detail" title="Link to this definition">¶</a></dt>
+<dd><p>Display the details of a specific discussion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – HttpRequest object</p></li>
+<li><p><strong>pk</strong> – Primary key of the discussion to display</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>HttpResponse object with discussion details</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="forum.views.discussions_list">
+<span class="sig-prename descclassname"><span class="pre">forum.views.</span></span><span class="sig-name descname"><span class="pre">discussions_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#forum.views.discussions_list" title="Link to this definition">¶</a></dt>
+<dd><p>Display a list of all discussions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> – HttpRequest object</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>HttpResponse object with the list of discussions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="forum.views.edit_post">
+<span class="sig-prename descclassname"><span class="pre">forum.views.</span></span><span class="sig-name descname"><span class="pre">edit_post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#forum.views.edit_post" title="Link to this definition">¶</a></dt>
+<dd><p>Allows the user to edit an existing post if they are the author.</p>
+<p>Checks if the user is the author of the post; if not, a forbidden response is returned.
+If the user is the author and the form is submitted and valid, the post is updated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – HttpRequest object</p></li>
+<li><p><strong>pk</strong> – Primary key of the post to be edited</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>HttpResponse object; redirects to the discussion detail or displays the form for editing</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 

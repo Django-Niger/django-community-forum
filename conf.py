@@ -1,7 +1,14 @@
 import os
 import sys
+import django
 
 sys.path.insert(0, os.path.abspath("."))
+
+# Nom de la configuration Django que Sphinx doit utiliser
+os.environ["DJANGO_SETTINGS_MODULE"] = "config.settings"
+
+# Configuration de l'environnement Django
+django.setup()
 
 
 # Configuration file for the Sphinx documentation builder.
