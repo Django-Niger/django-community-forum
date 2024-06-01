@@ -87,24 +87,26 @@ class PostEditTests(TestCase):
 
 class PostDeleteTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='user', password='pass')
-        self.other_user = User.objects.create_user(username='other', password='pass')
-        self.discussion = Discussion.objects.create(title='Test Discussion')
+        self.user = User.objects.create_user(username="user", password="pass")
+        self.other_user = User.objects.create_user(username="other", password="pass")
+        self.discussion = Discussion.objects.create(title="Test Discussion")
         self.post = Post.objects.create(
-            discussion=self.discussion, author=self.user, content='Original Content'
+            discussion=self.discussion, author=self.user, content="Original Content"
         )
 
     def test_delete_post_by_owner(self):
-        self.client.login(username='user', password='pass')
-        response = self.client.post(reverse('forum:delete_post', args=[self.post.id]))
-        self.assertRedirects(response, reverse('forum:discussion_detail', args=[self.discussion.id]))
+        self.client.login(username="user", password="pass")
+        response = self.client.post(reverse("forum:delete_post", args=[self.post.id]))
+        self.assertRedirects(
+            response, reverse("forum:discussion_detail", args=[self.discussion.id])
+        )
         # Check that the post is actually deleted
         with self.assertRaises(Post.DoesNotExist):
             Post.objects.get(id=self.post.id)
 
     def test_delete_post_by_non_owner(self):
-        self.client.login(username='other', password='pass')
-        response = self.client.post(reverse('forum:delete_post', args=[self.post.id]))
+        self.client.login(username="other", password="pass")
+        response = self.client.post(reverse("forum:delete_post", args=[self.post.id]))
         self.assertEqual(response.status_code, 403)
         # Check that the post still exists
         self.assertTrue(Post.objects.filter(id=self.post.id).exists())
