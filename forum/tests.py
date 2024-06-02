@@ -87,6 +87,35 @@ class CreateDiscussionViewTests(TestCase):
         self.assertIn("next=%s" % reverse("forum:create_discussion"), response.url)
 
 
+class CreateDiscussionTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="testuser", password="12345")
+        self.client.login(username="testuser", password="12345")
+
+    def test_create_discussion_page_status_code(self):
+        response = self.client.get(reverse("forum:create_discussion"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_create_discussion_url_resolves(self):
+        response = self.client.get(reverse("forum:create_discussion"))
+        self.assertTemplateUsed(response, "forum/create_discussion.html")
+
+    def test_create_discussion_post_success(self):
+        response = self.client.post(
+            reverse("forum:create_discussion"), {"title": "New Discussion"}
+        )
+        self.assertEqual(Discussion.objects.count(), 1)
+        self.assertEqual(Discussion.objects.first().title, "New Discussion")
+        self.assertRedirects(
+            response,
+            reverse("forum:discussions_list"),
+        )
+
+    def test_create_discussion_form_display(self):
+        response = self.client.get(reverse("forum:create_discussion"))
+        self.assertContains(response, "csrfmiddlewaretoken")
+
+
 class CreatePostViewTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="testuser", password="12345")
