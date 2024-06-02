@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .hooks import check_user_permission
 from django.http import HttpResponseForbidden
-from .models import Discussion, Post
+from .models import Discussion, Post, Notification
 from .forms import DiscussionForm, PostForm
 from .models import Discussion
 
@@ -68,6 +68,9 @@ def create_post(request, pk):
             post.discussion = discussion
             post.author = request.user
             post.save()
+            Notification.objects.create(
+                user=post.author, message="A new post has been added."
+            )
             return redirect("forum:discussion_detail", pk=discussion.pk)
     else:
         form = PostForm()
@@ -125,3 +128,23 @@ def delete_post(request, pk):
         return redirect("forum:discussion_detail", pk=discussion_id)
 
     return render(request, "forum/delete_post.html", {"post": post})
+
+
+@login_required
+def read_notification(request, notification_id):
+    """
+    Mark a specified notification as read and redirect the user to the list of discussions.
+
+    Args:
+        request (HttpRequest): The request object used to access the view.
+        notification_id (int): The primary key of the notification to be marked as read.
+
+    Returns:
+        HttpResponse: Redirects to the list of discussions after marking the notification as read.
+    """
+    notification = get_object_or_404(
+        Notification, id=notification_id, user=request.user
+    )
+    notification.read = True
+    notification.save()
+    return redirect("forum:discussions_list")

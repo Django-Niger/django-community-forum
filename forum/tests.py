@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.test import TestCase
-from .models import Discussion, Post
+from .models import Discussion, Post, Notification
 from .forms import DiscussionForm, PostForm
 
 
@@ -138,3 +138,43 @@ class PostDeleteTests(TestCase):
         self.assertEqual(response.status_code, 403)
         # Check that the post still exists
         self.assertTrue(Post.objects.filter(id=self.post.id).exists())
+
+
+class NotificationTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="user", password="pass")
+        self.discussion = Discussion.objects.create(title="Test Discussion")
+
+    def test_notification_on_post_creation(self):
+        """
+        Test that a notification is created when a new post is added.
+        """
+        self.client.login(username="user", password="pass")
+        self.client.post(
+            reverse("forum:create_post", args=[self.discussion.id]),
+            {"content": "Hello world"},
+        )
+        self.assertEqual(Notification.objects.count(), 1)
+        self.assertEqual(Notification.objects.first().user, self.user)
+        self.assertEqual(
+            Notification.objects.first().message, "A new post has been added."
+        )
+
+    def test_notification_marked_as_read(self):
+        """
+        Test that a notification is marked as read when accessed.
+        """
+        notification = Notification.objects.create(
+            user=self.user, message="New post created"
+        )
+        self.client.login(username="user", password="pass")
+        self.client.get(reverse("forum:read_notification", args=[notification.id]))
+        notification.refresh_from_db()
+        self.assertTrue(notification.read)
+
+    def test_custom_notification_logic(self):
+        """
+        Test that custom notification logic can be implemented.
+        """
+        # This test will depend on how you allow customization through hooks or settings.
+        pass

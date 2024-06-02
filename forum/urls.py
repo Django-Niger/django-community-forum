@@ -11,4 +11,9 @@ urlpatterns = [
     path("discussion/<int:pk>/create_post/", views.create_post, name="create_post"),
     path("post/<int:pk>/edit/", views.edit_post, name="edit_post"),
     path("post/<int:pk>/delete/", views.delete_post, name="delete_post"),
+    path(
+        "notification/read/<int:notification_id>/",
+        views.read_notification,
+        name="read_notification",
+    ),
 ]

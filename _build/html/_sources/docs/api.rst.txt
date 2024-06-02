@@ -11,7 +11,7 @@ This function is a hook used by the forum application to check if a user has the
 
 
 .. automodule:: forum.models
-    :members: Discussion, Post
+    :members: Discussion, Post, Notification
 
 .. automodule:: forum.views
-    :members: discussions_list, discussion_detail, create_discussion, create_post, edit_post, delete_post
+    :members: discussions_list, discussion_detail, create_discussion, create_post, edit_post, delete_post, read_notification
