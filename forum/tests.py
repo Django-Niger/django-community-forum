@@ -36,9 +36,11 @@ class CodeFormatTest(TestCase):
 class DiscussionModelTests(TestCase):
     def test_creating_discussion(self):
         """Tests that we can create and save a Discussion."""
-        discussion = Discussion(title="Example Discussion")
+        user = User.objects.create_user(username="testuser", password="12345")
+        discussion = Discussion(title="Example Discussion", author=user)
         discussion.save()
         self.assertEqual(discussion.title, "Example Discussion")
+        self.assertEqual(discussion.author, user)
 
 
 class PostModelTests(TestCase):
@@ -157,7 +159,8 @@ class NotificationTests(TestCase):
         self.assertEqual(Notification.objects.count(), 1)
         self.assertEqual(Notification.objects.first().user, self.user)
         self.assertEqual(
-            Notification.objects.first().message, "A new post has been added."
+            Notification.objects.first().message,
+            "Your response has been added to the discussion.",
         )
 
     def test_notification_marked_as_read(self):
@@ -178,3 +181,57 @@ class NotificationTests(TestCase):
         """
         # This test will depend on how you allow customization through hooks or settings.
         pass
+
+
+class NotificationResponseTests(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(username="user1", password="pass1")
+        self.user2 = User.objects.create_user(username="user2", password="pass2")
+        self.discussion = Discussion.objects.create(
+            title="Test Discussion", author=self.user1
+        )
+        self.post = Post.objects.create(
+            discussion=self.discussion, author=self.user1, content="Initial post"
+        )
+
+    def test_notification_on_post_response(self):
+        """
+        Test that notifications are created when a post is responded to.
+        """
+        self.client.login(username="user2", password="pass2")
+        self.client.post(
+            reverse("forum:create_post", args=[self.discussion.id]),
+            {"content": "Response to initial post"},
+        )
+        self.assertEqual(Notification.objects.count(), 2)
+        self.assertTrue(
+            Notification.objects.filter(user=self.user1).exists(),
+            "Notification should be sent to the original post's author.",
+        )
+        self.assertTrue(
+            Notification.objects.filter(user=self.user2).exists(),
+            "Notification should be sent to the responder as confirmation.",
+        )
+
+
+class UserMentionTests(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(username="user1", password="testpass")
+        self.user2 = User.objects.create_user(username="user2", password="testpass")
+        self.discussion = Discussion.objects.create(title="Test Discussion")
+
+    def test_notification_on_user_mention(self):
+        """
+        Test that a notification is created when a user is mentioned in a post.
+        """
+        self.client.login(username="user1", password="testpass")
+        mention_content = f"Hello @{self.user2.username}, check this out!"
+        self.client.post(
+            reverse("forum:create_post", args=[self.discussion.id]),
+            {"content": mention_content},
+        )
+        # Check if a notification is created for user2
+        self.assertTrue(Notification.objects.filter(user=self.user2).exists())
+        # Check the content of the notification
+        notification = Notification.objects.get(user=self.user2)
+        self.assertIn("mentioned you", notification.message)

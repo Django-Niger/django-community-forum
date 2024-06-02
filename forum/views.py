@@ -44,6 +44,8 @@ def create_discussion(request):
     if request.method == "POST":
         form = DiscussionForm(request.POST)
         if form.is_valid():
+            discussion = form.save(commit=False)
+            discussion.author = request.user
             form.save()
             return redirect("forum:discussions_list")
     else:
@@ -68,9 +70,20 @@ def create_post(request, pk):
             post.discussion = discussion
             post.author = request.user
             post.save()
+
+            # Créer une notification pour l'auteur du post original si ce n'est pas l'auteur de la réponse
+            if post.discussion.author and post.discussion.author != post.author:
+                Notification.objects.create(
+                    user=post.discussion.author,
+                    message=f"{post.author.username} has responded to your discussion titled '{post.discussion.title}'.",
+                )
+
+            # Créer une notification pour l'auteur de la réponse
             Notification.objects.create(
-                user=post.author, message="A new post has been added."
+                user=post.author,
+                message="Your response has been added to the discussion.",
             )
+
             return redirect("forum:discussion_detail", pk=discussion.pk)
     else:
         form = PostForm()

@@ -8,10 +8,24 @@ class Discussion(models.Model):
 
     Attributes:
         title (str): The title of the discussion.
-        created_at (datetime): The date and time the discussion was created.
+        author (User, optional): The user who created the discussion. This field can be null if the discussion was created
+                                 without an associated user, for example, by an automated process or before user implementation.
+        created_at (datetime): The date and time the discussion was created, automatically set when the discussion is first saved.
+
+    Fields:
+        title (models.CharField): Stores the title of the discussion, with a maximum length of 200 characters.
+        author (models.ForeignKey): Links to the Django user model. It is nullable to allow discussions without an explicit author.
+                                    Uses 'settings.AUTH_USER_MODEL' to support custom user models.
+        created_at (models.DateTimeField): Automatically records the time the discussion was created, not modifiable.
     """
 
     title = models.CharField(max_length=200)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="discussions",
+        null=True,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
 
