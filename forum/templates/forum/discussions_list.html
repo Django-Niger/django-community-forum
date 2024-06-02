@@ -2,6 +2,7 @@
 
 {% block content %}
 <h1>Discussions</h1>
+<a href="{% url 'forum:create_discussion' %}" class="btn btn-primary">Create New Discussion</a> <!-- Bouton pour créer une discussion -->
 {% if discussions %}
   <ul>
     {% for discussion in discussions %}

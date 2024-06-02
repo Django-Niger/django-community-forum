@@ -116,6 +116,32 @@ class CreateDiscussionTests(TestCase):
         self.assertContains(response, "csrfmiddlewaretoken")
 
 
+class DiscussionListTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="testuser", password="12345")
+        self.client.login(username="testuser", password="12345")
+        Discussion.objects.create(title="Test Discussion", author=self.user)
+
+    def test_create_discussion_button(self):
+        """Vérifie que le bouton de création de discussion est présent."""
+        response = self.client.get(reverse("forum:discussions_list"))
+        self.assertContains(response, "Create New Discussion")
+        self.assertContains(response, reverse("forum:create_discussion"))
+
+    def test_discussions_list_shows_discussions(self):
+        """Vérifie que les discussions sont affichées."""
+        response = self.client.get(reverse("forum:discussions_list"))
+        self.assertContains(response, "Test Discussion")
+
+    def test_no_discussions_available(self):
+        """Vérifie que le message 'No discussions are available.' s'affiche si aucune discussion n'est présente."""
+        # Supprimer toutes les discussions pour ce test
+        Discussion.objects.all().delete()
+        response = self.client.get(reverse("forum:discussions_list"))
+        self.assertContains(response, "No discussions are available.")
+        self.assertNotContains(response, "<li>", html=True)
+
+
 class CreatePostViewTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="testuser", password="12345")
