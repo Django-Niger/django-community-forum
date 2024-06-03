@@ -142,6 +142,25 @@ class DiscussionListTests(TestCase):
         self.assertNotContains(response, "<li>", html=True)
 
 
+class DiscussionDetailTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="testuser", password="12345")
+        self.discussion = Discussion.objects.create(
+            title="Test Discussion", author=self.user
+        )
+        self.url = reverse("forum:discussion_detail", args=[self.discussion.id])
+        self.client.login(username="testuser", password="12345")
+
+    def test_add_post_button_visible(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, "Add Post")
+
+    def test_add_post_button_not_visible_to_anonymous(self):
+        self.client.logout()
+        response = self.client.get(self.url)
+        self.assertNotContains(response, "Add Post")
+
+
 class CreatePostViewTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="testuser", password="12345")
