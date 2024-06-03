@@ -2,7 +2,7 @@ import subprocess
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
-from django.test import TestCase
+from django.test import TestCase, Client
 from .models import Discussion, Post, Notification
 from .forms import DiscussionForm, PostForm
 
@@ -159,6 +159,58 @@ class DiscussionDetailTests(TestCase):
         self.client.logout()
         response = self.client.get(self.url)
         self.assertNotContains(response, "Add Post")
+
+
+class DiscussionDetailFormTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="testuser", password="12345")
+        self.discussion = Discussion.objects.create(
+            title="Test Discussion", author=self.user
+        )
+        self.client = Client()
+        self.url = reverse("forum:discussion_detail", args=[self.discussion.pk])
+
+    def test_form_visible_for_authenticated_user(self):
+        self.client.login(username="testuser", password="12345")
+        response = self.client.get(self.url)
+        self.assertContains(response, "<form")  # Check for form presence
+        self.assertContains(
+            response, 'name="content"'
+        )  # Check for specific input field
+
+    def test_form_not_visible_for_unauthenticated_user(self):
+        response = self.client.get(self.url)
+        self.assertNotContains(response, "<form")
+
+    def test_form_submission_creates_post(self):
+        self.client.login(username="testuser", password="12345")
+        post_data = {"content": "This is a new post in the discussion"}
+        response = self.client.post(self.url, post_data)
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertEqual(
+            Post.objects.first().content, "This is a new post in the discussion"
+        )
+        self.assertRedirects(
+            response, self.url
+        )  # Assuming you redirect back to the discussion detail page
+
+    def test_form_visibility_for_unauthenticated_users(self):
+        response = self.client.get(self.url)
+        self.assertNotContains(response, "csrfmiddlewaretoken", status_code=200)
+
+    def test_form_visibility_for_authenticated_users(self):
+        self.client.login(username="testuser", password="12345")
+        response = self.client.get(self.url)
+        self.assertContains(response, "csrfmiddlewaretoken", status_code=200)
+
+    def test_form_submission_by_authenticated_user_creates_post(self):
+        self.client.login(username="testuser", password="12345")
+        post_data = {"content": "New response"}
+        response = self.client.post(self.url, post_data)
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertRedirects(
+            response, reverse("forum:discussion_detail", args=[self.discussion.id])
+        )
 
 
 class CreatePostViewTests(TestCase):

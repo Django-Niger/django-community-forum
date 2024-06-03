@@ -3,10 +3,6 @@
 {% block content %}
 <h1>{{ discussion.title }}</h1>
 
-{% if user.is_authenticated %}
-    <a href="{% url 'forum:create_post' discussion.id %}" class="btn btn-primary">Add Post</a>
-{% endif %}
-
 <h2>Posts</h2>
 {% if discussion.posts.all %}
   <ul>
@@ -19,4 +15,16 @@
 {% else %}
   <p>No posts yet.</p>
 {% endif %}
+
+{% if user.is_authenticated %}
+    <div>
+        <h2>Add a new post</h2>
+        <form method="post" action="{% url 'forum:create_post' discussion.id %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Add Post</button>
+        </form>
+    </div>
+{% endif %}
+
 {% endblock %}

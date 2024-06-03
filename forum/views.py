@@ -20,14 +20,28 @@ def discussions_list(request):
 
 def discussion_detail(request, pk):
     """
-    Display the details of a specific discussion.
+    Display the details of a specific discussion and handle post creation form for authenticated users.
 
     :param request: HttpRequest object
     :param pk: Primary key of the discussion to display
-    :return: HttpResponse object with discussion details
+    :return: HttpResponse object with discussion details or redirect after form submission
     """
     discussion = get_object_or_404(Discussion, pk=pk)
-    return render(request, "forum/discussion_detail.html", {"discussion": discussion})
+    form = PostForm(request.POST or None) if request.user.is_authenticated else None
+
+    if request.method == "POST" and form is not None:
+        if form.is_valid():
+            new_post = form.save(commit=False)
+            new_post.author = request.user
+            new_post.discussion = discussion
+            new_post.save()
+            return redirect("forum:discussion_detail", pk=discussion.pk)
+
+    return render(
+        request,
+        "forum/discussion_detail.html",
+        {"discussion": discussion, "form": form},
+    )
 
 
 @login_required
